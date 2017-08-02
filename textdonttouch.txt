@@ -1,0 +1,48 @@
+47
+def next():
+    global current_color
+    if current_color <= (len(colorlist) - 1):
+        bridge.set_light(lts, colorlist[current_color])
+        current_color = current_color + 1
+    else:
+        current_color = 0
+        bridge.set_light(lts, colorlist[current_color])
+        current_color = current_color + 1
+        
+def combo():
+    global next_light
+    if next_light == len(lts) - 1:
+        if lightdict[lts[next_light]] == -1:
+            cycle()
+        else:
+            bridge.set_light(lts[next_light], {"bri": bri, "sat": 250, "hue": 63000, "transitiontime": 0})
+            lightdict[lts[next_light]] = -1
+            next_light = 0
+    else:
+        if lightdict[lts[next_light]] == -1:
+            cycle()
+        else:
+            bridge.set_light(lts[next_light], {"bri": bri, "sat": 250, "hue": 63000, "transitiontime": 0})
+            lightdict[lts[next_light]] = -1
+            next_light = next_light + 1
+
+
+def cycle():
+    global next_light
+    global lightdict
+    if next_light == len(lts) - 1:
+        if lightdict[lts[-1]] == 4:
+            bridge.set_light(lts[-1], colorlist[0])
+            lightdict[lts[-1]] = 0
+        else:
+            bridge.set_light(lts[-1], colorlist[lightdict["Fan 3"] + 1])
+            lightdict[lts[-1]] = lightdict[lts[-1]] + 1
+        next_light = 0
+    else:
+        if lightdict[lts[next_light]] == 4:
+            bridge.set_light(lts[next_light], colorlist[0])
+            lightdict[lts[next_light]] = 0
+        else:
+            bridge.set_light(lts[next_light], colorlist[lightdict[lts[next_light]] + 1])
+            lightdict[lts[next_light]] = lightdict[lts[next_light]] + 1
+        next_light = next_light + 1

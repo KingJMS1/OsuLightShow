@@ -1,0 +1,77 @@
+import phue
+from phue import Bridge
+
+bridge = Bridge("192.168.1.110")	#Bridge IP
+
+lts = ["Fan 1", "Fan 2", "Fan 3"]	#Light names
+
+bri = 90				#Preferred brightness
+
+colorlist = [{"bri": bri, "sat": 250, "hue": 50500, "transitiontime": 0}, \	#Light Colors
+             {"bri": bri, "sat": 250, "hue": 45400, "transitiontime": 0}, \
+             {"bri": bri, "sat": 250, "hue": 47100, "transitiontime": 0}, \
+             {"bri": bri, "sat": 250, "hue": 48600, "transitiontime": 0}, \
+             {"bri": bri, "sat": 250, "hue": 43000, "transitiontime": 0}]
+
+global current_color
+
+global current_light
+
+global lightdict
+
+global next_color
+
+lightdict = {"Fan 1": 0, "Fan 2": 1, "Fan 3": 2}	#Light names in a dict. Not my best idea, used to go from name to index of lts list.
+
+current_color = 0
+
+next_light = 0
+
+def next():	#Triggers whenever a non-combo-starter beat comes.
+    global current_color
+    if current_color <= (len(colorlist) - 1):
+        bridge.set_light(lts, colorlist[current_color])
+        current_color = current_color + 1
+    else:
+        current_color = 0
+        bridge.set_light(lts, colorlist[current_color])
+        current_color = current_color + 1
+        
+def combo():	#Triggers whever a combo-starter beat comes.
+    global next_light
+    if next_light == len(lts) - 1:
+        if lightdict[lts[next_light]] == -1:
+            cycle()
+        else:
+            bridge.set_light(lts[next_light], {"bri": bri, "sat": 250, "hue": 63000, "transitiontime": 0})
+            lightdict[lts[next_light]] = -1
+            next_light = 0
+    else:
+        if lightdict[lts[next_light]] == -1:
+            cycle()
+        else:
+            bridge.set_light(lts[next_light], {"bri": bri, "sat": 250, "hue": 63000, "transitiontime": 0})
+            lightdict[lts[next_light]] = -1
+            next_light = next_light + 1
+
+
+def cycle():	#Cycles the lights, triggered by next() and combo()
+    global next_light
+    global lightdict
+    if next_light == len(lts) - 1:
+        if lightdict[lts[-1]] == 4:
+            bridge.set_light(lts[-1], colorlist[0])
+            lightdict[lts[-1]] = 0
+        else:
+            bridge.set_light(lts[-1], colorlist[lightdict["Fan 3"] + 1])
+            lightdict[lts[-1]] = lightdict[lts[-1]] + 1
+        next_light = 0
+    else:
+        if lightdict[lts[next_light]] == 4:
+            bridge.set_light(lts[next_light], colorlist[0])
+            lightdict[lts[next_light]] = 0
+        else:
+            bridge.set_light(lts[next_light], colorlist[lightdict[lts[next_light]] + 1])
+            lightdict[lts[next_light]] = lightdict[lts[next_light]] + 1
+        next_light = next_light + 1
+
