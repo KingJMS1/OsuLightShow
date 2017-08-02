@@ -6,7 +6,7 @@ I license this software under the MIT License (MIT), more info in LICENSE.txt
 
 Steps to get this software working:
 
-	0. This was developed on Windows 10, so attempting to run it on other platforms might not work so well
+	0. This was developed on Windows 10 with Python 3.6.1 (Anaconda 4.4.0 64-bit), so attempting to run it on other platforms might not work so well
 
 	1. Run Setup.py via python interpreter from the OsuToLights folder.
 
